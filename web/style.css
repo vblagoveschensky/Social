@@ -1,0 +1,35 @@
+table {
+
+     border-collapse: collapse;
+}
+
+.embedded {
+    width: 100%;
+}
+
+
+.floatblock {
+    width: 300px;
+    height: 200px;
+    float: left;
+}
+
+.clearfix {
+    clear: left;
+}
+
+#recipients {
+    width: 100px;
+    border: 1px solid gray;
+    margin: 0;
+}
+
+#contacts {
+   float: right;
+    height: 500px;
+}
+
+tr, td, th {
+    border: 1px solid black;
+
+}
