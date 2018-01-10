@@ -10,9 +10,9 @@
         
         <h1>Messenger</h1>
         <h2>Inbox</h2>
-        <iframe src="${pageContext.servletContext.contextPath}/personal/embedded/messages"></iframe>
+        <iframe class="box" src="${pageContext.servletContext.contextPath}/personal/embedded/messages"></iframe>
         <h2>Outbox</h2>
-        <iframe src="${pageContext.servletContext.contextPath}/personal/embedded/messages?box=outbox"></iframe>
+        <iframe class="box" src="${pageContext.servletContext.contextPath}/personal/embedded/messages?box=outbox"></iframe>
         <h2>New message</h2>
         <iframe id="contacts" src="${pageContext.servletContext.contextPath}/personal/embedded/contacts"></iframe>
         <form method="POST">

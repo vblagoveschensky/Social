@@ -1,6 +1,6 @@
 table {
 
-     border-collapse: collapse;
+    border-collapse: collapse;
 }
 
 .embedded {
@@ -25,11 +25,14 @@ table {
 }
 
 #contacts {
-   float: right;
+    float: right;
     height: 500px;
 }
 
 tr, td, th {
     border: 1px solid black;
+}
 
+.box {
+    height: 300px;
 }
