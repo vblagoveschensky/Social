@@ -26,5 +26,6 @@
                 <span id="password2error" hidden="hidden">Passwords must be the same.</span></div>
             <input type="submit" value="Change" />
         </form>
+            <a href="${pageContext.servletContext.contextPath}/personal/unregister">Unregister</a>
     </body>
 </html>

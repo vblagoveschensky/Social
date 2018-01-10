@@ -2,14 +2,7 @@ package social.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.RollbackException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,9 +16,18 @@ import social.model.Person;
  *
  * @author Владимир
  */
-@WebServlet(name = "Messenger", urlPatterns = {"/personal/messenger"})
-public class Messenger extends HttpServlet {
+@WebServlet(name = "Unregister", urlPatterns = {"/personal/unregister"})
+public class Unregister extends HttpServlet {
 
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -38,7 +40,7 @@ public class Messenger extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
-        getServletContext().getRequestDispatcher("/messenger.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/unregister.jsp").forward(request, response);
     }
 
     /**
@@ -53,31 +55,18 @@ public class Messenger extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         EntityManager manager = (EntityManager) request.getAttribute("manager");
-        Set<Person> recipients = new HashSet<>();
-        if (request.getParameter("recipients") != null) {
-            for (String id : request.getParameterValues("recipients")) {
-                try {
-                    recipients.add(manager.getReference(Person.class, Long.parseUnsignedLong(id)));
-                } catch (EntityNotFoundException exception) {
-
-                }
-            }
-            if (recipients.size() < request.getParameterValues("recipients").length) {
-                manager.getTransaction().setRollbackOnly();
-                request.setAttribute("senderror", "Some recipients do not exist, removed. Please try again.");
-            }
-        } else {
+        Person user = (Person) request.getAttribute("user");
+        if (!DataUtils.encrypt(request.getParameter("password")).equals(user.getPassword())) {
+            request.setAttribute("passworderror", "Incorrect password.");
             manager.getTransaction().setRollbackOnly();
-            request.setAttribute("senderror", "Please select a recipient.");
         }
-        ((Person) request.getAttribute("user")).sendMessage(recipients,
-                request.getParameter("text"));
+        manager.remove(request.getAttribute("user"));
         try {
             manager.getTransaction().commit();
+            response.sendRedirect(getServletContext().getContextPath());
         } catch (RollbackException exception) {
-            request.setAttribute("recipients", recipients);
+            doGet(request, response);
         }
-        doGet(request, response);
     }
 
     /**
@@ -87,7 +76,7 @@ public class Messenger extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Messenger servlet";
+        return "Unregister servlet";
     }
 
 }

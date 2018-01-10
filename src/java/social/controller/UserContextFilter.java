@@ -45,18 +45,20 @@ public class UserContextFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         EntityManager manager = DataUtils.getEntityManager();
         manager.getTransaction().begin();
-        try {
-            request.setAttribute("user",
-                    manager.getReference(Person.class,
-                            manager.createQuery("select user.id from Person user where user.login = :login")
-                                    .setParameter("login", request.getRemoteUser())
-                                    .getSingleResult()));
-            request.setAttribute("manager", manager);
-            chain.doFilter(servletRequest, servletResponse);
-            manager.close();
-        } catch (NoResultException exception) {
-            request.getSession().setAttribute("loginerror", "This login does not exist anymore.");
-            request.getServletContext().getRequestDispatcher("/logout").forward(request, response);
+        if (request.getRemoteUser() != null) {
+            try {
+                request.setAttribute("user",
+                        manager.getReference(Person.class,
+                                manager.createQuery("select user.id from Person user where user.login = :login")
+                                        .setParameter("login", request.getRemoteUser())
+                                        .getSingleResult()));
+                request.setAttribute("manager", manager);
+                chain.doFilter(servletRequest, servletResponse);
+                manager.close();
+            } catch (NoResultException exception) {
+                request.getSession().setAttribute("loginerror", "This login does not exist anymore.");
+                request.getServletContext().getRequestDispatcher("/logout").forward(request, response);
+            }
         }
     }
 

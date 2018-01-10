@@ -35,7 +35,7 @@
     <security-constraint>
         <display-name>UsersConstraint</display-name>
         <web-resource-collection>
-            <web-resource-name>All</web-resource-name>
+            <web-resource-name>Personal</web-resource-name>
             <description/>
             <url-pattern>/personal/*</url-pattern>
         </web-resource-collection>
