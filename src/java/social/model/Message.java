@@ -26,14 +26,11 @@ import javax.validation.constraints.Size;
  * @author Владимир
  */
 @Entity
-public class Message implements Serializable {
+public class Message extends Model {
 
-    private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
+    
     public Message() {
 
     }
@@ -42,14 +39,6 @@ public class Message implements Serializable {
         this.sender = sender;
         this.recipients = recipients;
         this.text = text;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @NotNull
@@ -95,13 +84,7 @@ public class Message implements Serializable {
         return sent;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
+   
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -115,9 +98,6 @@ public class Message implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "social.model.Message[ id=" + id + " ]";
-    }
+    
 
 }

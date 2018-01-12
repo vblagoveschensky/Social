@@ -37,7 +37,7 @@ import social.data.DataUtils;
  * @author Владимир
  */
 @Entity
-public class Person implements Serializable {
+public class Person extends Model {
 
     public Person() {
 
@@ -48,18 +48,7 @@ public class Person implements Serializable {
         this.name = name;
     }
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
     @Size(min = 1, message = "Name can not be empty.")
     @Column(nullable = false)
     private String name;
@@ -125,12 +114,7 @@ public class Person implements Serializable {
         this.groups = (HashSet<UserGroup>) groups;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
+   
 
     @Override
     public boolean equals(Object object) {
@@ -145,9 +129,6 @@ public class Person implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "social.model.Person[ id=" + id + " ]";
-    }
+   
 
 }
