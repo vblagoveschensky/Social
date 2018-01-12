@@ -37,11 +37,11 @@ public class Contacts extends HttpServlet {
 
         int page = DataUtils.validatePageNumber(
                 request.getParameter("page"),
-                (long) DataUtils.buildQuery(entityManager, true, true, null, id, search).getSingleResult(),
+                (long) DataUtils.buildSearchQuery(entityManager, true, id, search).getSingleResult(),
                 maxResults);
 
         request.setAttribute("users",
-                DataUtils.buildQuery(entityManager, false, true, null, id, search)
+                DataUtils.buildSearchQuery(entityManager, false, id, search)
                         .setMaxResults(maxResults)
                         .setFirstResult(page * maxResults)
                         .getResultList());

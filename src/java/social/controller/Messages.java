@@ -53,10 +53,10 @@ public class Messages extends HttpServlet {
         int maxResults = (int) getServletContext().getAttribute("maxResults");
         int page = DataUtils.validatePageNumber(
                 request.getParameter("page"),
-                (long) DataUtils.buildQuery(entityManager, true, false, field, id, null).getSingleResult(),
+                (long) DataUtils.buildMessagesQuery(entityManager, true, field, id).getSingleResult(),
                 maxResults);
         request.setAttribute("messages",
-                DataUtils.buildQuery(entityManager, false, false, field, id, null)
+                DataUtils.buildMessagesQuery(entityManager, false, field, id)
                         .setMaxResults(maxResults)
                         .setFirstResult(page * maxResults)
                         .getResultList());

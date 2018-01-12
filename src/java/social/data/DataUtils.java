@@ -68,6 +68,15 @@ public class DataUtils {
         return page;
     }
 
+    public static Query buildSearchQuery(EntityManager entityManager, boolean count, Long id, String search) {
+        return buildQuery(entityManager, count, true, null, id, search);
+    }
+    
+    public static Query buildMessagesQuery(EntityManager entityManager, boolean count, String field, Long id) {
+        return buildQuery(entityManager, count, false, field, id, null);
+    }
+    
+    
     public static Query buildQuery(EntityManager entityManager, boolean count, boolean other, String field, Long id, String search) {
         final String QUERY_STRING = "from Person user where user.id";
         final String QUERY_STRING_SEARCH = " and (user.login like :search or user.name like :search)";
