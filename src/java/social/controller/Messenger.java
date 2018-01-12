@@ -52,7 +52,7 @@ public class Messenger extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EntityManager manager = (EntityManager) request.getAttribute("manager");
+        EntityManager manager = (EntityManager) request.getAttribute("entitymanager");
         Set<Person> recipients = new HashSet<>();
         if (request.getParameter("recipients") != null) {
             for (String id : request.getParameterValues("recipients")) {

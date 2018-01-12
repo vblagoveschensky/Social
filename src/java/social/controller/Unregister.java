@@ -56,12 +56,14 @@ public class Unregister extends HttpServlet {
             throws ServletException, IOException {
         EntityManager manager = (EntityManager) request.getAttribute("manager");
         Person user = (Person) request.getAttribute("user");
-        if (!DataUtils.encrypt(request.getParameter("password")).equals(user.getPassword())) {
+        if (!DataUtils.encrypt(request.getParameter("password"),
+                getServletContext().getInitParameter("digestAlgorithm")).equals(user.getPassword())) {
             request.setAttribute("passworderror", "Incorrect password.");
             manager.getTransaction().setRollbackOnly();
         }
-        manager.remove(request.getAttribute("user"));
+        
         try {
+            manager.remove(request.getAttribute("user"));
             manager.getTransaction().commit();
             response.sendRedirect(getServletContext().getContextPath());
         } catch (RollbackException exception) {

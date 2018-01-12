@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import social.data.DataUtils;
+import social.model.Person;
 
 /**
  *
@@ -37,37 +38,29 @@ public class Messages extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        String query;
-        String countQuery;
-        String view;
-                
+        String field;
         switch (request.getParameter("box") + "") {
             case "outbox":
-                query = "select user.sentMessages from Person user where user.login = :login";
-                countQuery = "select count(user.sentMessages) from Person user where user.login = :login";
+                field = "sentMessages";
                 break;
             case "inbox":
             default:
-                query = "select user.receivedMessages from Person user where user.login = :login";
-                countQuery = "select count(user.receivedMessages) from Person user where user.login = :login";
+                field = "receivedMessages";
         }
-        EntityManager manager = (EntityManager) request.getAttribute("manager");
-
-        int page = DataUtils.getValidPage(request.getParameter("page"),
-                (long) manager.createQuery(countQuery)
-                        .setParameter("login", request.getRemoteUser())
-                        .getSingleResult());
-
-        int maxResults = DataUtils.getMaxResults();
-
+        
+        EntityManager entityManager = (EntityManager) request.getAttribute("entitymanager");
+                Long id = ((Person) request.getAttribute("user")).getId();
+        int maxResults = (int) getServletContext().getAttribute("maxResults");
+        int page = DataUtils.validatePageNumber(
+                request.getParameter("page"),
+                (long) DataUtils.buildQuery(entityManager, true, false, field, id, null).getSingleResult(),
+                maxResults);
         request.setAttribute("messages",
-                manager.createQuery(query)
-                        .setParameter("login", request.getRemoteUser())
-                        .setMaxResults(maxResults).setFirstResult(page * maxResults)
+                DataUtils.buildQuery(entityManager, false, false, field, id, null)
+                        .setMaxResults(maxResults)
+                        .setFirstResult(page * maxResults)
                         .getResultList());
         request.setAttribute("page", page);
-
         response.setContentType("text/html");
         getServletContext().getRequestDispatcher("/embedded/messages.jsp").forward(request, response);
     }

@@ -39,16 +39,6 @@ public class CharsetFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    /**
-     * Return a String representation of this object.
-     */
-    @Override
-    public String toString() {
-
-        return ("CharsetFilter()");
-
-    }
-
     @Override
     public void init(FilterConfig filterConfig) {
         encoding = "UTF-8";

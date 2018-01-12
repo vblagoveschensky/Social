@@ -1,13 +1,10 @@
 package social.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.RollbackException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -52,16 +49,16 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EntityManager manager = DataUtils.getEntityManager();
-        manager.getTransaction().begin();
+        EntityManager entityManager = ((EntityManagerFactory) getServletContext().getAttribute("entityManagerFactory")).createEntityManager();
+        entityManager.getTransaction().begin();
 
         UserGroup users;
         try {
-            users = (UserGroup) manager.createQuery("from UserGroup ugroup where ugroup.name = 'Users'")
+            users = (UserGroup) entityManager.createQuery("from UserGroup ugroup where ugroup.name = 'Users'")
                     .getSingleResult();
         } catch (NoResultException exception) {
             users = new UserGroup("Users");
-            manager.persist(users);
+            entityManager.persist(users);
         }
 
         Person newcomer = new Person(request.getParameter("login"),
@@ -71,14 +68,15 @@ public class Registration extends HttpServlet {
 
         String passwordError = DataUtils.validatePassword(request.getParameter("password"));
         if (passwordError == null) {
-            newcomer.setPassword(DataUtils.encrypt(request.getParameter("password")));
+            newcomer.setPassword(DataUtils.encrypt(request.getParameter("password"),
+                    getServletContext().getInitParameter("digestAlgorithm")));
         } else {
             request.setAttribute("passworderror", passwordError);
-            manager.getTransaction().setRollbackOnly();
+            entityManager.getTransaction().setRollbackOnly();
         }
 
         try {
-            manager.persist(newcomer);
+            entityManager.persist(newcomer);
         } catch (ConstraintViolationException exception) {
             for (ConstraintViolation violation : exception.getConstraintViolations()) {
                 request.setAttribute(violation.getPropertyPath().toString() + "error", violation.getMessage());
@@ -86,7 +84,7 @@ public class Registration extends HttpServlet {
         }
 
         try {
-            manager.getTransaction().commit();
+            entityManager.getTransaction().commit();
             if (request.getRemoteUser() != null) {
                 request.logout();
             }

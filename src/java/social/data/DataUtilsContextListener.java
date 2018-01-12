@@ -1,22 +1,26 @@
 package social.data;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import static social.data.DataUtils.parseUnsignedIntOrZero;
+import social.model.UserGroup;
 
-/**
- * Web application lifecycle listener.
- *
- * @author Владимир
- */
 public class DataUtilsContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        DataUtils.init(sce.getServletContext());
+        ServletContext context = sce.getServletContext();
+        context.setAttribute("entityManagerFactory", Persistence.createEntityManagerFactory("SocialPU"));
+        context.setAttribute("maxResults", parseUnsignedIntOrZero(context.getInitParameter("maxResults")));
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-       DataUtils.unInit();
+        ((EntityManagerFactory) sce.getServletContext().getAttribute("entityManagerFactory")).close();
     }
 }

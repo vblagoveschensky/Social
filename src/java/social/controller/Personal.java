@@ -51,17 +51,19 @@ public class Personal extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         EntityManager manager = (EntityManager) request.getAttribute("manager");
+
+        String algorithm = getServletContext().getInitParameter("digestAlgorithm");
         Person user = (Person) request.getAttribute("user");
         if (request.getParameter("name") != null) {
             user.setName(request.getParameter("name"));
         } else {
-            if (!DataUtils.encrypt(request.getParameter("oldpassword")).equals(user.getPassword())) {
+            if (!DataUtils.encrypt(request.getParameter("oldpassword"), algorithm).equals(user.getPassword())) {
                 request.setAttribute("oldpassworderror", "Incorrect password.");
                 manager.getTransaction().setRollbackOnly();
             }
             String passwordError = DataUtils.validatePassword(request.getParameter("password"));
             if (passwordError == null) {
-                user.setPassword(DataUtils.encrypt(request.getParameter("password")));
+                user.setPassword(DataUtils.encrypt(request.getParameter("password"), algorithm));
             } else {
                 request.setAttribute("passworderror", passwordError);
                 manager.getTransaction().setRollbackOnly();
@@ -84,15 +86,4 @@ public class Personal extends HttpServlet {
         }
         doGet(request, response);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Personal servlet";
-    }
-
 }

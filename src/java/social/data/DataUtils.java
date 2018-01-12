@@ -8,6 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.Formatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.servlet.ServletContext;
 
@@ -21,23 +23,6 @@ public class DataUtils {
 
     }
 
-    private static EntityManagerFactory factory;
-
-    private static String algorithm;
-
-    private static int maxResults;
-
-    private final static String DEFAULTDIGESTALGORITHM = "SHA-256";
-
-    public static void init(ServletContext context) {
-        factory = Persistence.createEntityManagerFactory("SocialPU");
-        algorithm = context.getInitParameter("digestAlgorithm");
-        if (algorithm == null || algorithm.isEmpty()) {
-            algorithm = DEFAULTDIGESTALGORITHM;
-        }
-        maxResults = parseUnsignedIntOrZero(context.getInitParameter("maxResults"));
-    }
-
     public static int parseUnsignedIntOrZero(String string) {
         try {
             return Integer.parseUnsignedInt(string);
@@ -46,22 +31,20 @@ public class DataUtils {
         }
     }
 
-    public static EntityManager getEntityManager() {
-        return factory.createEntityManager();
-    }
-
-    public static void unInit() {
-        factory.close();
-    }
-
-    public static String encrypt(String secret, String algorithm) throws NoSuchAlgorithmException {
-        byte[] hash = MessageDigest.getInstance(algorithm).digest(secret.getBytes(StandardCharsets.UTF_8));
-        StringBuilder stringBuilder = new StringBuilder(hash.length * 2);
-        Formatter formatter = new Formatter(stringBuilder);
-        for (byte b : hash) {
-            formatter.format("%02x", b);
+    public static String encrypt(String secret, String algorithm) {
+        try {
+            byte[] hash = MessageDigest.getInstance(algorithm).digest(secret.getBytes(StandardCharsets.UTF_8));
+            StringBuilder stringBuilder = new StringBuilder(hash.length * 2);
+            Formatter formatter = new Formatter(stringBuilder);
+            for (byte b : hash) {
+                formatter.format("%02x", b);
+            }
+            return stringBuilder.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            throw new ProviderException(String.format("Selected digest algorithm (%s) not supported.", algorithm), ex);
+        } catch (NullPointerException ex) {
+            throw new IllegalArgumentException("No digest algorithm specified");
         }
-        return stringBuilder.toString();
     }
 
     public static String validatePassword(String password) {
@@ -72,34 +55,48 @@ public class DataUtils {
         }
     }
 
-    public static String encrypt(String secret) {
-        try {
-            return encrypt(secret, algorithm);
-        } catch (NoSuchAlgorithmException ex) {
-            throw new ProviderException(String.format("Digest algorithm (%s) not available.", algorithm), ex);
-        }
-    }
-
-    public static int getMaxResults() {
-        return maxResults;
-    }
-    
-    public static int getValidPage(String page, long count) {
-        return getValidPage(parseUnsignedIntOrZero(page), count);
-    }
-
-    public static int getValidPage(int page, long count) {
+    public static int validatePageNumber(String strPageNumber, long count, int maxResults) {
+        int page = parseUnsignedIntOrZero(strPageNumber);
         if (maxResults > 0) {
             int maxPage = (int) (count / maxResults);
             if (page > maxPage) {
                 page = maxPage;
             }
-        }
-        if (page >= 0) {
-            return page;
         } else {
-            return 0;
+            page = 0;
         }
+        return page;
     }
 
+    public static Query buildQuery(EntityManager entityManager, boolean count, boolean other, String field, Long id, String search) {
+        final String QUERY_STRING = "from Person user where user.id";
+        final String QUERY_STRING_SEARCH = " and (user.login like :search or user.name like :search)";
+        String queryString = "";
+        if (field != null && !field.isEmpty()) {
+            queryString = "user." + field;
+            if (count) {
+                queryString = String.format("select count(%s) ", queryString);
+            } else {
+                queryString = String.format("select %s ", queryString);
+            }
+        } else if (count) {
+            queryString = "select count(user) ";
+        }
+        queryString += QUERY_STRING;
+        
+        if (other) {
+            queryString += " != :id";
+        } else {
+            queryString += " = :id";
+        }
+
+        Query query;
+        if (search == null) {
+            query = entityManager.createQuery(queryString);
+        } else {
+            query = entityManager.createQuery(queryString + QUERY_STRING_SEARCH)
+                    .setParameter("search", "%" + search + "%");
+        }
+        return query.setParameter("id", id);
+    }
 }

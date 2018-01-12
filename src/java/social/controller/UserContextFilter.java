@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -43,46 +44,33 @@ public class UserContextFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        EntityManager manager = DataUtils.getEntityManager();
-        manager.getTransaction().begin();
+        EntityManager entityManager = ((EntityManagerFactory) servletRequest.getServletContext().getAttribute("entityManagerFactory")).createEntityManager();
+        entityManager.getTransaction().begin();
         if (request.getRemoteUser() != null) {
             try {
                 request.setAttribute("user",
-                        manager.getReference(Person.class,
-                                manager.createQuery("select user.id from Person user where user.login = :login")
+                        entityManager.getReference(Person.class,
+                                entityManager.createQuery("select user.id from Person user where user.login = :login")
                                         .setParameter("login", request.getRemoteUser())
                                         .getSingleResult()));
-                request.setAttribute("manager", manager);
+                request.setAttribute("entitymanager", entityManager);
                 chain.doFilter(servletRequest, servletResponse);
-                manager.close();
+
             } catch (NoResultException exception) {
                 request.getSession().setAttribute("loginerror", "This login does not exist anymore.");
                 request.getServletContext().getRequestDispatcher("/logout").forward(request, response);
             }
+            entityManager.close();
         }
     }
 
-    /**
-     * Destroy method for this filter
-     */
+    @Override
     public void destroy() {
+
     }
 
-    /**
-     * Init method for this filter
-     */
+    @Override
     public void init(FilterConfig filterConfig) {
 
     }
-
-    /**
-     * Return a String representation of this object.
-     */
-    @Override
-    public String toString() {
-
-        return ("UserContextFilter()");
-
-    }
-
 }
