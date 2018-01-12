@@ -85,7 +85,7 @@ public class Person extends Model {
 
     @OrderBy("sent DESC")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sender", cascade = CascadeType.PERSIST)
-    private Set<Message> sentMessages = new LinkedHashSet<>();
+    private LinkedHashSet<Message> sentMessages = new LinkedHashSet<>();
 
     public Set<Message> getSentMessages() {
         return sentMessages;
@@ -93,7 +93,7 @@ public class Person extends Model {
 
     @OrderBy("sent DESC")
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "recipients")
-    private Set<Message> receivedMessages = new LinkedHashSet<>();
+    private LinkedHashSet<Message> receivedMessages = new LinkedHashSet<>();
 
     public Set<Message> getReceivedMessages() {
         return receivedMessages;

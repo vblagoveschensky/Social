@@ -41,8 +41,7 @@ public class Message extends Model {
         this.text = text;
     }
 
-    @NotNull
-    @JoinColumn(nullable = false)
+
     @ManyToOne
     private Person sender;
 

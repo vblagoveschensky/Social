@@ -54,7 +54,7 @@ public class Unregister extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EntityManager manager = (EntityManager) request.getAttribute("manager");
+        EntityManager manager = (EntityManager) request.getAttribute("entitymanager");
         Person user = (Person) request.getAttribute("user");
         if (!DataUtils.encrypt(request.getParameter("password"),
                 getServletContext().getInitParameter("digestAlgorithm")).equals(user.getPassword())) {
@@ -63,7 +63,10 @@ public class Unregister extends HttpServlet {
         }
         
         try {
-            manager.remove(request.getAttribute("user"));
+            user.getSentMessages().forEach(message -> message.setSender(null));
+            user.getReceivedMessages().forEach(message
+                    -> message.getRecipients().remove(user));
+            manager.remove(user);
             manager.getTransaction().commit();
             response.sendRedirect(getServletContext().getContextPath());
         } catch (RollbackException exception) {
@@ -80,5 +83,5 @@ public class Unregister extends HttpServlet {
     public String getServletInfo() {
         return "Unregister servlet";
     }
-
+    
 }
