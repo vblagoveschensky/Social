@@ -15,12 +15,12 @@ public class DataUtilsContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
-        context.setAttribute("entityManagerFactory", Persistence.createEntityManagerFactory("SocialPU"));
-        context.setAttribute("maxResults", parseUnsignedIntOrZero(context.getInitParameter("maxResults")));
+        context.setAttribute("entitymanagerfactory", Persistence.createEntityManagerFactory("SocialPU"));
+        context.setAttribute("maxresults", parseUnsignedIntOrZero(context.getInitParameter("maxResults")));
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        ((EntityManagerFactory) sce.getServletContext().getAttribute("entityManagerFactory")).close();
+        ((EntityManagerFactory) sce.getServletContext().getAttribute("entitymanagerfactory")).close();
     }
 }

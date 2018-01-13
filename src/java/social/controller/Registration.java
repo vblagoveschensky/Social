@@ -49,7 +49,8 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EntityManager entityManager = ((EntityManagerFactory) getServletContext().getAttribute("entityManagerFactory")).createEntityManager();
+        EntityManager entityManager = ((EntityManagerFactory) getServletContext().getAttribute("entitymanagerfactory"))
+                .createEntityManager();
         entityManager.getTransaction().begin();
 
         UserGroup users;

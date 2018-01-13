@@ -4,14 +4,18 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.ProviderException;
+import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.Formatter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Query;
 import javax.servlet.ServletContext;
+import social.model.Message;
+import social.model.Person;
 
 /**
  *
@@ -55,8 +59,8 @@ public class DataUtils {
         }
     }
 
-    public static int validatePageNumber(String strPageNumber, long count, int maxResults) {
-        int page = parseUnsignedIntOrZero(strPageNumber);
+    public static int validatePageNumber(String txtPageNumber, long count, int maxResults) {
+        int page = parseUnsignedIntOrZero(txtPageNumber);
         if (maxResults > 0) {
             int maxPage = (int) (count / maxResults);
             if (page > maxPage) {
@@ -68,44 +72,73 @@ public class DataUtils {
         return page;
     }
 
-    public static Query buildSearchQuery(EntityManager entityManager, boolean count, Long id, String search) {
-        return buildQuery(entityManager, count, true, null, id, search);
+    protected static long getCount(Query countQuery) {
+        return (long) countQuery.getSingleResult();
     }
-    
-    public static Query buildMessagesQuery(EntityManager entityManager, boolean count, String field, Long id) {
-        return buildQuery(entityManager, count, false, field, id, null);
+
+    public static long getMessagesCount(EntityManager entityManager, long id, String box) {
+        return getCount(buildQuery(entityManager, box, true, id, false, null, null));
     }
-    
-    
-    public static Query buildQuery(EntityManager entityManager, boolean count, boolean other, String field, Long id, String search) {
-        final String QUERY_STRING = "from Person user where user.id";
-        final String QUERY_STRING_SEARCH = " and (user.login like :search or user.name like :search)";
-        String queryString = "";
-        if (field != null && !field.isEmpty()) {
-            queryString = "user." + field;
-            if (count) {
-                queryString = String.format("select count(%s) ", queryString);
-            } else {
-                queryString = String.format("select %s ", queryString);
-            }
-        } else if (count) {
-            queryString = "select count(user) ";
-        }
-        queryString += QUERY_STRING;
-        
-        if (other) {
-            queryString += " != :id";
-        } else {
-            queryString += " = :id";
+
+    public static long getContactsCount(EntityManager entityManager, long id, String search) {
+        return getCount(buildQuery(entityManager, null, true, id, true, search, false));
+    }
+
+    protected static List getPage(Query query, int first, int max) {
+        return query.setFirstResult(first).setMaxResults(max).getResultList();
+    }
+
+    public static List<Message> getMessages(EntityManager entityManager, long id, String box, int first, int max) {
+        return getPage(buildQuery(entityManager, box, false, id, false, null, null), first, max);
+    }
+
+    public static List<Person> getContacts(EntityManager entityManager, long id, String search, int first, int max) {
+        return getPage(buildQuery(entityManager, null, false, id, true, search, false), first, max);
+    }
+
+    public static Long getUserId(EntityManager entityManager, String login) {
+        return (Long) buildQuery(entityManager, "id", false, null, null, login, false).getSingleResult();
+    }
+
+    protected static Query buildQuery(EntityManager entityManager,
+            String field, boolean count, Long id, Boolean excludeId, String search, Boolean strict) {
+        String what = "user";
+        if (field != null) {
+            what += ("." + field);
         }
 
-        Query query;
-        if (search == null) {
-            query = entityManager.createQuery(queryString);
-        } else {
-            query = entityManager.createQuery(queryString + QUERY_STRING_SEARCH)
-                    .setParameter("search", "%" + search + "%");
+        if (count) {
+            what = String.format("count(%s)", what);
         }
-        return query.setParameter("id", id);
+
+        List<String> where = new ArrayList();
+
+        if (id != null) {
+            String condition = excludeId ? " != " : " = ";
+            where.add("user.id" + condition + ":id");
+        }
+
+        if (search != null) {
+            if (strict) {
+                where.add("user.login = :search");
+            } else {
+                search = "%" + search + "%";
+                where.add("(user.login like :search or user.name like :search)");
+            }
+        }
+
+        Query query = entityManager.createQuery(String.format("select %s from Person user where %s",
+                what, String.join(" and ", where)));
+
+        if (id != null) {
+            query.setParameter("id", id);
+        }
+
+        if (search != null) {
+            query.setParameter("search", search);
+        }
+
+        return query;
     }
+
 }

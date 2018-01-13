@@ -12,7 +12,7 @@
         <div>Name: ${requestScope.user.name}</div>
         <h2>Change name</h2>
         <form method="POST">
-            <div><label>New name:<input type="text" name="name" value="${param.name}" onkeydown="hideError(this)"></label>
+            <div><label>New name:<input type="text" name="name" value="<c:if test="${not empty requestScope.nameerror}">${param.name}</c:if>" onkeydown="hideError(this)"></label>
                 <span id="nameerror">${requestScope.nameerror}</span></div>
             <input type="submit" value="Change" />
         </form>

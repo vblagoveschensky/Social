@@ -33,18 +33,15 @@ public class Contacts extends HttpServlet {
 
         String search = request.getParameter("search");
         Long id = ((Person) request.getAttribute("user")).getId();
-        int maxResults = (int) getServletContext().getAttribute("maxResults");
+        int maxResults = (int) getServletContext().getAttribute("maxresults");
 
         int page = DataUtils.validatePageNumber(
                 request.getParameter("page"),
-                (long) DataUtils.buildSearchQuery(entityManager, true, id, search).getSingleResult(),
+                DataUtils.getContactsCount(entityManager, id, search),
                 maxResults);
 
         request.setAttribute("users",
-                DataUtils.buildSearchQuery(entityManager, false, id, search)
-                        .setMaxResults(maxResults)
-                        .setFirstResult(page * maxResults)
-                        .getResultList());
+                DataUtils.getContacts(entityManager, id, search, page * maxResults, maxResults));
         request.setAttribute("page", page);
         response.setContentType("text/html");
         getServletContext().getRequestDispatcher("/embedded/contacts.jsp").forward(request, response);

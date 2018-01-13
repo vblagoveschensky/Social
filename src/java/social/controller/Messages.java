@@ -50,16 +50,13 @@ public class Messages extends HttpServlet {
         
         EntityManager entityManager = (EntityManager) request.getAttribute("entitymanager");
                 Long id = ((Person) request.getAttribute("user")).getId();
-        int maxResults = (int) getServletContext().getAttribute("maxResults");
+        int maxResults = (int) getServletContext().getAttribute("maxresults");
         int page = DataUtils.validatePageNumber(
                 request.getParameter("page"),
-                (long) DataUtils.buildMessagesQuery(entityManager, true, field, id).getSingleResult(),
+                DataUtils.getMessagesCount(entityManager, id, field),
                 maxResults);
         request.setAttribute("messages",
-                DataUtils.buildMessagesQuery(entityManager, false, field, id)
-                        .setMaxResults(maxResults)
-                        .setFirstResult(page * maxResults)
-                        .getResultList());
+                DataUtils.getMessages(entityManager, id, field, page * maxResults, maxResults));
         request.setAttribute("page", page);
         response.setContentType("text/html");
         getServletContext().getRequestDispatcher("/embedded/messages.jsp").forward(request, response);

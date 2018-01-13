@@ -44,15 +44,13 @@ public class UserContextFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        EntityManager entityManager = ((EntityManagerFactory) servletRequest.getServletContext().getAttribute("entityManagerFactory")).createEntityManager();
+        EntityManager entityManager = ((EntityManagerFactory) servletRequest.getServletContext().getAttribute("entitymanagerfactory")).createEntityManager();
         entityManager.getTransaction().begin();
         if (request.getRemoteUser() != null) {
             try {
                 request.setAttribute("user",
                         entityManager.getReference(Person.class,
-                                entityManager.createQuery("select user.id from Person user where user.login = :login")
-                                        .setParameter("login", request.getRemoteUser())
-                                        .getSingleResult()));
+                                DataUtils.getUserId(entityManager, request.getRemoteUser())));
                 request.setAttribute("entitymanager", entityManager);
                 chain.doFilter(servletRequest, servletResponse);
 

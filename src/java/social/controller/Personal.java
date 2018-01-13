@@ -50,8 +50,7 @@ public class Personal extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EntityManager manager = (EntityManager) request.getAttribute("manager");
-
+        EntityManager manager = (EntityManager) request.getAttribute("entitymanager");
         String algorithm = getServletContext().getInitParameter("digestAlgorithm");
         Person user = (Person) request.getAttribute("user");
         if (request.getParameter("name") != null) {
