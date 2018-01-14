@@ -8,18 +8,6 @@
         <param-name>digestAlgorithm</param-name>
         <param-value>SHA-256</param-value>
     </context-param>
-    <filter>
-        <filter-name>CharsetFilter</filter-name>
-        <filter-class>social.controller.CharsetFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>CharsetFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>INCLUDE</dispatcher>
-        <dispatcher>ERROR</dispatcher>
-    </filter-mapping>
     <listener>
         <description>ServletContextListener</description>
         <listener-class>social.data.DataUtilsContextListener</listener-class>

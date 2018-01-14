@@ -26,6 +26,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -48,7 +50,6 @@ public class Person extends Model {
         this.name = name;
     }
 
-    
     @Size(min = 1, message = "Name can not be empty.")
     @Column(nullable = false)
     private String name;
@@ -73,14 +74,16 @@ public class Person extends Model {
         this.login = login;
     }
 
-    private String password;
+    private String passwordHash;
 
     public String getPassword() {
-        return password;
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password, String digestAlgorithm) {
         this.password = password;
+        this.digestAlgorithm = digestAlgorithm;
+        passwordHash = "";
     }
 
     @OrderBy("sent DESC")
@@ -98,7 +101,7 @@ public class Person extends Model {
     public Set<Message> getReceivedMessages() {
         return receivedMessages;
     }
-    
+
     public void sendMessage(Set<Person> recipients, String text) {
         getSentMessages().add(new Message(this, recipients, text));
     }
@@ -114,7 +117,27 @@ public class Person extends Model {
         this.groups = (HashSet<UserGroup>) groups;
     }
 
-   
+    @PreRemove
+    private void preRemove() {
+        getSentMessages().forEach(message -> message.setSender(null));
+        getReceivedMessages().forEach(message
+                -> message.getRecipients().remove(this));
+    }
+
+    @Size(min = 1, message = "Password can not be empty.")
+    @Transient
+    private String password;
+
+    @Transient
+    private String digestAlgorithm;
+
+    @PrePersist
+    @PreUpdate
+    private void encryptPassword() {
+        if (password != null && digestAlgorithm != null) {
+            passwordHash = DataUtils.encrypt(password, digestAlgorithm);
+        }
+    }
 
     @Override
     public boolean equals(Object object) {
@@ -128,7 +151,5 @@ public class Person extends Model {
         }
         return true;
     }
-
-   
 
 }

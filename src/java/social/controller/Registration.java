@@ -67,34 +67,24 @@ public class Registration extends HttpServlet {
 
         newcomer.getGroups().add(users);
 
-        String passwordError = DataUtils.validatePassword(request.getParameter("password"));
-        if (passwordError == null) {
-            newcomer.setPassword(DataUtils.encrypt(request.getParameter("password"),
-                    getServletContext().getInitParameter("digestAlgorithm")));
-        } else {
-            request.setAttribute("passworderror", passwordError);
-            entityManager.getTransaction().setRollbackOnly();
-        }
+        newcomer.setPassword(request.getParameter("password"),
+                getServletContext().getInitParameter("digestAlgorithm"));
 
         try {
             entityManager.persist(newcomer);
-        } catch (ConstraintViolationException exception) {
-            for (ConstraintViolation violation : exception.getConstraintViolations()) {
-                request.setAttribute(violation.getPropertyPath().toString() + "error", violation.getMessage());
-            }
-        }
-
-        try {
             entityManager.getTransaction().commit();
             if (request.getRemoteUser() != null) {
                 request.logout();
             }
             request.login(request.getParameter("login"), request.getParameter("password"));
             response.sendRedirect(getServletContext().getContextPath());
+        } catch (ConstraintViolationException exception) {
+            exception.getConstraintViolations().forEach(violation -> {
+                request.setAttribute(violation.getPropertyPath().toString() + "error", violation.getMessage());
+            });
+            doGet(request, response);
         } catch (RollbackException exception) {
-            if (exception.getCause() != null) {
-                request.setAttribute("loginerror", "This login already exists.");
-            }
+            request.setAttribute("loginerror", "This login already exists.");
             doGet(request, response);
         }
     }

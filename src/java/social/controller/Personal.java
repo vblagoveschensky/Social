@@ -51,37 +51,33 @@ public class Personal extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         EntityManager manager = (EntityManager) request.getAttribute("entitymanager");
-        String algorithm = getServletContext().getInitParameter("digestAlgorithm");
+        String digestAlgorithm = getServletContext().getInitParameter("digestAlgorithm");
         Person user = (Person) request.getAttribute("user");
         if (request.getParameter("name") != null) {
             user.setName(request.getParameter("name"));
         } else {
-            if (!DataUtils.encrypt(request.getParameter("oldpassword"), algorithm).equals(user.getPassword())) {
+            if (!DataUtils.encrypt(request.getParameter("oldpassword"), digestAlgorithm).equals(user.getPassword())) {
                 request.setAttribute("oldpassworderror", "Incorrect password.");
                 manager.getTransaction().setRollbackOnly();
-            }
-            String passwordError = DataUtils.validatePassword(request.getParameter("password"));
-            if (passwordError == null) {
-                user.setPassword(DataUtils.encrypt(request.getParameter("password"), algorithm));
             } else {
-                request.setAttribute("passworderror", passwordError);
-                manager.getTransaction().setRollbackOnly();
-            }
-            if (!manager.getTransaction().getRollbackOnly()) {
-                request.setAttribute("oldpassworderror", "Password changed.");
+                user.setPassword(request.getParameter("password"),
+                        getServletContext().getInitParameter("digestAlgorithm"));
             }
         }
+        
         try {
             manager.getTransaction().commit();
+            if (request.getParameter("password") != null) {
+                request.setAttribute("oldpassworderror", "Password changed.");
+            }
         } catch (RollbackException exception) {
             if (exception.getCause() != null) {
                 ConstraintViolationException cause = (ConstraintViolationException) exception.getCause();
-                for (ConstraintViolation violation : cause.getConstraintViolations()) {
+                cause.getConstraintViolations().forEach(violation -> {
                     request.setAttribute(violation.getPropertyPath().toString() + "error", violation.getMessage());
-                }
+                });
             }
             request.setAttribute("user", manager.getReference(Person.class, user.getId()));
-
         }
         doGet(request, response);
     }

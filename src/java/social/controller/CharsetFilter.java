@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -16,6 +17,9 @@ import javax.servlet.annotation.WebFilter;
  *
  * @author Владимир
  */
+@WebFilter(filterName = "CharsetFilter", urlPatterns = {"/*"},
+        dispatcherTypes
+        = {DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST})
 public class CharsetFilter implements Filter {
 
     private String encoding;

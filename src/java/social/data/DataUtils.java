@@ -35,9 +35,9 @@ public class DataUtils {
         }
     }
 
-    public static String encrypt(String secret, String algorithm) {
+    public static String encrypt(String secret, String digestAlgorithm) {
         try {
-            byte[] hash = MessageDigest.getInstance(algorithm).digest(secret.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = MessageDigest.getInstance(digestAlgorithm).digest(secret.getBytes(StandardCharsets.UTF_8));
             StringBuilder stringBuilder = new StringBuilder(hash.length * 2);
             Formatter formatter = new Formatter(stringBuilder);
             for (byte b : hash) {
@@ -45,9 +45,7 @@ public class DataUtils {
             }
             return stringBuilder.toString();
         } catch (NoSuchAlgorithmException ex) {
-            throw new ProviderException(String.format("Selected digest algorithm (%s) not supported.", algorithm), ex);
-        } catch (NullPointerException ex) {
-            throw new IllegalArgumentException("No digest algorithm specified");
+            throw new ProviderException(String.format("Selected digest algorithm (%s) not supported.", digestAlgorithm), ex);
         }
     }
 
@@ -97,7 +95,7 @@ public class DataUtils {
     }
 
     public static Long getUserId(EntityManager entityManager, String login) {
-        return (Long) buildQuery(entityManager, "id", false, null, null, login, false).getSingleResult();
+        return (Long) buildQuery(entityManager, "id", false, null, null, login, true).getSingleResult();
     }
 
     protected static Query buildQuery(EntityManager entityManager,
