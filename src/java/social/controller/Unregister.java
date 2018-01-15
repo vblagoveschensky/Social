@@ -55,9 +55,9 @@ public class Unregister extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         EntityManager manager = (EntityManager) request.getAttribute("entitymanager");
+        String digestAlgorithm = getServletContext().getInitParameter("digestAlgorithm");
         Person user = (Person) request.getAttribute("user");
-        if (DataUtils.encrypt(request.getParameter("password"),
-                getServletContext().getInitParameter("digestAlgorithm")).equals(user.getPassword())) {
+        if (user.validatePassword(request.getParameter("password"), digestAlgorithm)) {
             manager.remove(user);
             manager.getTransaction().commit();
             response.sendRedirect(getServletContext().getContextPath());

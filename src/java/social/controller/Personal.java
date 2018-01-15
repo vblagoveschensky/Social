@@ -56,7 +56,7 @@ public class Personal extends HttpServlet {
         if (request.getParameter("name") != null) {
             user.setName(request.getParameter("name"));
         } else {
-            if (!DataUtils.encrypt(request.getParameter("oldpassword"), digestAlgorithm).equals(user.getPassword())) {
+            if (!user.validatePassword(request.getParameter("password"), digestAlgorithm)) {
                 request.setAttribute("oldpassworderror", "Incorrect password.");
                 manager.getTransaction().setRollbackOnly();
             } else {

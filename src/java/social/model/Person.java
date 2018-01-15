@@ -76,8 +76,8 @@ public class Person extends Model {
 
     private String passwordHash;
 
-    public String getPassword() {
-        return passwordHash;
+    public boolean validatePassword(String password, String digestAlgorithm) {
+        return passwordHash.equals(DataUtils.encrypt(password, digestAlgorithm));
     }
 
     public void setPassword(String password, String digestAlgorithm) {
