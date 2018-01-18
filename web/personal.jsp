@@ -20,9 +20,9 @@
         <h2><s:t m="change" /> <s:t m="person.password" /></h2>
         <form method="POST" onsubmit="return validate(this)">
             <div><label><s:t m="forms.password.old" />:<input type="password" name="oldpassword" onkeydown="hideError(this)"></label>
-                <span id="oldpassworderror">${requestScope.oldpassworderror}</span></div>
+                <span id="oldpassworderror"><s:t m="${requestScope.oldpassworderror}" /></span></div>
             <div><label><s:t m="person.password" />:<input type="password" name="password" onkeydown="hideError(this)"></label>
-                <span id="passworderror">${requestScope.passworderror}</span></div>
+                <span id="passworderror"><s:t m="${requestScope.passworderror}" /></span></div>
             <div><label><s:t m="person.password" /> <s:t m="forms.onemore" />: <input type="password" name="password2" onkeydown="hideError(this)"></label>
                 <span id="password2error" hidden="hidden"><s:t m="forms.password.differs" /></span></div>
             <input type="submit" value="<s:t m="change" />" />

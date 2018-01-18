@@ -86,7 +86,6 @@ public class Person extends Model {
         this.login = login;
     }
 
-    @NotNull
     @Column(nullable = false)
     private String passwordHash;
 
