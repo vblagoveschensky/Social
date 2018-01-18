@@ -1,12 +1,7 @@
 package social.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -16,18 +11,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import social.data.DataUtils;
 import social.model.Person;
 
 /**
- *
- * @author Владимир
+ * Messenger servlet.
  */
 @WebServlet(name = "Messenger", urlPatterns = {"/personal/messenger"})
 public class Messenger extends HttpServlet {
 
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method. Renders the messenger page.
      *
      * @param request servlet request
      * @param response servlet response
@@ -42,7 +35,8 @@ public class Messenger extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method. Handles the send message
+     * requests.
      *
      * @param request servlet request
      * @param response servlet response
@@ -64,11 +58,11 @@ public class Messenger extends HttpServlet {
             }
             if (recipients.size() < request.getParameterValues("recipients").length) {
                 manager.getTransaction().setRollbackOnly();
-                request.setAttribute("senderror", "Some recipients do not exist, removed. Please try again.");
+                request.setAttribute("senderror", "messenger.recipientdoesnotexist");
             }
         } else {
             manager.getTransaction().setRollbackOnly();
-            request.setAttribute("senderror", "Please select a recipient.");
+            request.setAttribute("senderror", "messenger.norecipients");
         }
         ((Person) request.getAttribute("user")).sendMessage(recipients,
                 request.getParameter("text"));
@@ -79,15 +73,4 @@ public class Messenger extends HttpServlet {
         }
         doGet(request, response);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Messenger servlet";
-    }
-
 }

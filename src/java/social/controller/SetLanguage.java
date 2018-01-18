@@ -8,14 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
- * @author Владимир
+ * Handles change language requests.
  */
-@WebServlet(name = "Logout", urlPatterns = {"/logout"})
-public class Logout extends HttpServlet {
+@WebServlet(name = "SetLanguage", urlPatterns = {"/setlanguage"})
+public class SetLanguage extends HttpServlet {
 
     /**
-     * Handles the HTTP <code>GET</code> method. Performs logout.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -23,9 +22,9 @@ public class Logout extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.logout();
+        request.getSession(true).setAttribute("locale", request.getParameter("locale"));
         response.sendRedirect(getServletContext().getContextPath());
     }
 }

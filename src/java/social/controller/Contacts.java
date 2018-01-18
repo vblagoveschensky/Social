@@ -1,7 +1,6 @@
 package social.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,8 +11,7 @@ import social.data.DataUtils;
 import social.model.Person;
 
 /**
- *
- * @author Владимир
+ * Renders a contacts page.
  */
 @WebServlet(name = "Contacts", urlPatterns = {"/personal/embedded/contacts"})
 public class Contacts extends HttpServlet {
@@ -35,8 +33,7 @@ public class Contacts extends HttpServlet {
         Long id = ((Person) request.getAttribute("user")).getId();
         int maxResults = (int) getServletContext().getAttribute("maxresults");
 
-        int page = DataUtils.validatePageNumber(
-                request.getParameter("page"),
+        int page = DataUtils.validatePageNumber(request.getParameter("page"),
                 DataUtils.getContactsCount(entityManager, id, search),
                 maxResults);
 

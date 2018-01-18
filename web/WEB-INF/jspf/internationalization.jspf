@@ -1,0 +1,4 @@
+<%@ taglib tagdir="/WEB-INF/tags" prefix="s" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="${sessionScope.locale}" scope="request" />
+<fmt:setBundle basename="social.resources.translate" scope="request" />

@@ -1,9 +1,6 @@
 package social.controller;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -14,12 +11,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 
 /**
- *
- * @author Владимир
+ * Sets UTF-8 charset to request and response.
  */
 @WebFilter(filterName = "CharsetFilter", urlPatterns = {"/*"},
-        dispatcherTypes
-        = {DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST})
+        dispatcherTypes = {DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.FORWARD,
+            DispatcherType.INCLUDE, DispatcherType.REQUEST})
 public class CharsetFilter implements Filter {
 
     private String encoding;
@@ -52,5 +48,4 @@ public class CharsetFilter implements Filter {
     public void destroy() {
 
     }
-
 }

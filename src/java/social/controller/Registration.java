@@ -10,21 +10,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import social.data.DataUtils;
 import social.model.Person;
 import social.model.UserGroup;
 
 /**
- *
- * @author Владимир
+ * Renders the registration page, handles its input.
  */
 @WebServlet(name = "Registration", urlPatterns = {"/registration"})
 public class Registration extends HttpServlet {
 
     /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method. Renders the registration page.
+     *Renders the registration page.
      *
      * @param request servlet request
      * @param response servlet response
@@ -39,7 +37,8 @@ public class Registration extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method. Handles the page input,
+     * performs automatic login after registration.
      *
      * @param request servlet request
      * @param response servlet response
@@ -84,19 +83,9 @@ public class Registration extends HttpServlet {
             });
             doGet(request, response);
         } catch (RollbackException exception) {
-            request.setAttribute("loginerror", "This login already exists.");
+            request.setAttribute("loginerror", "person.login.duplicate");
             doGet(request, response);
         }
+        entityManager.close();
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Registration servlet";
-    }
-
 }

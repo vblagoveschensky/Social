@@ -1,19 +1,19 @@
+<%@ include file="/WEB-INF/jspf/internationalization.jspf" %>
 <!DOCTYPE html>
 <html>
     <head>
         <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/style.css">
-        <title>Messenger</title>
+        <title><s:t m="messenger" /></title>
         <script src="${pageContext.servletContext.contextPath}/contacts.js"></script>
     </head>
     <body>
         <%@ include file="/WEB-INF/jspf/header.jspf" %>
-        
-        <h1>Messenger</h1>
-        <h2>Inbox</h2>
+        <h1><s:t m="messenger" /></h1>
+        <h2><s:t m="messenger.inbox" /></h2>
         <iframe class="box" src="${pageContext.servletContext.contextPath}/personal/embedded/messages"></iframe>
-        <h2>Outbox</h2>
+        <h2><s:t m="messenger.outbox" /></h2>
         <iframe class="box" src="${pageContext.servletContext.contextPath}/personal/embedded/messages?box=outbox"></iframe>
-        <h2>New message</h2>
+        <h2><s:t m="messenger.newmessage" /></h2>
         <iframe id="contacts" src="${pageContext.servletContext.contextPath}/personal/embedded/contacts"></iframe>
         <form method="POST">
             <textarea name="text" class="floatblock"><c:if test="${not empty requestScope.senderror}">${param.text}</c:if></textarea>
@@ -27,7 +27,7 @@
             </ul>
             <div class="clearfix"></div>
             <input type="submit" value="Send"/>
-            ${requestScope.senderror}
+            <s:t m="${requestScope.senderror}" />
         </form>
     </body>
 </html>

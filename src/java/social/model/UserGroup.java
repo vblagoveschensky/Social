@@ -1,29 +1,29 @@
 package social.model;
 
-import java.io.Serializable;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.HashSet;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
 /**
- *
- * @author Владимир
+ *Represents a group of users
  */
 @Entity
 public class UserGroup extends Model {
 
+    /**
+     *default constructor
+     */
     public UserGroup() {
     }
 
+    /**
+     *constructor
+     * @param name name of the group
+     */
     public UserGroup(String name) {
         this.name = name;
     }
@@ -32,10 +32,18 @@ public class UserGroup extends Model {
     @Column(nullable = false, unique = true)
     private String name;
 
+    /**
+     *retrieves the name of the group
+     * @return name of the group
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *sets a new name for the group
+     * @param name name to be set
+     */
     public void setName(String name) {
         this.name = name;
     }
@@ -43,17 +51,16 @@ public class UserGroup extends Model {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
     private Set<Person> members = new HashSet<>();
 
+    /**
+     *retrieves set of members
+     * @return set of members
+     */
     public Set<Person> getMembers() {
         return members;
     }
 
-    public void setMembers(Set<Person> members) {
-        this.members = members;
-    }
-
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof UserGroup)) {
             return false;
         }

@@ -1,35 +1,22 @@
 package social.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import social.data.DataUtils;
 import social.model.Person;
 
 /**
- *
- * @author Владимир
+ * Handles unregister requests.
  */
 @WebServlet(name = "Unregister", urlPatterns = {"/personal/unregister"})
 public class Unregister extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    /**
-     * Handles the HTTP <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method. Renders the unregister page.
      *
      * @param request servlet request
      * @param response servlet response
@@ -44,7 +31,8 @@ public class Unregister extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method. Handles the unregister
+     * request.
      *
      * @param request servlet request
      * @param response servlet response
@@ -62,19 +50,8 @@ public class Unregister extends HttpServlet {
             manager.getTransaction().commit();
             response.sendRedirect(getServletContext().getContextPath());
         } else {
-            request.setAttribute("passworderror", "Incorrect password.");
+            request.setAttribute("passworderror", "person.password.incorrect");
             manager.getTransaction().setRollbackOnly();
         }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Unregister servlet";
-    }
-
 }

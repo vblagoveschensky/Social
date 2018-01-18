@@ -1,9 +1,6 @@
 package social.controller;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
@@ -20,8 +17,9 @@ import social.data.DataUtils;
 import social.model.Person;
 
 /**
- *
- * @author Владимир
+ * Checks if a user trying to restore a session yet exists, if so, opens a
+ * transaction, closes the EntityManager instance after handling the request at
+ * servlets.
  */
 @WebFilter(filterName = "UserContextFilter", urlPatterns = {"/personal/*"})
 public class UserContextFilter implements Filter {
@@ -55,7 +53,7 @@ public class UserContextFilter implements Filter {
                 chain.doFilter(servletRequest, servletResponse);
 
             } catch (NoResultException exception) {
-                request.getSession().setAttribute("loginerror", "This login does not exist anymore.");
+                request.getSession().setAttribute("loginerror", "login.doesnotexist");
                 request.getServletContext().getRequestDispatcher("/logout").forward(request, response);
             }
             entityManager.close();

@@ -1,27 +1,12 @@
 package social.model;
 
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.ProviderException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -29,67 +14,115 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import social.data.DataUtils;
 
 /**
- *
- * @author Владимир
+ * Represents a user.
  */
 @Entity
 public class Person extends Model {
 
+    /**
+     * Creates a new instance
+     */
     public Person() {
 
     }
 
+    /**
+     * Creates a new instance with login and name set
+     *
+     * @param login login
+     * @param name name
+     */
     public Person(String login, String name) {
         this.login = login;
         this.name = name;
     }
 
-    @Size(min = 1, message = "Name can not be empty.")
+    @Size(min = 1, message = "person.name.empty")
     @Column(nullable = false)
     private String name;
 
+    /**
+     * Retrieves the user's name
+     *
+     * @return the user's name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the user's name
+     *
+     * @param name name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
-    @Size(min = 1, message = "Login can not be empty.")
+    @Size(min = 1, message = "person.login.empty")
     @Column(nullable = false, unique = true)
     private String login;
 
+    /**
+     * Retrieves the user's login
+     *
+     * @return login
+     */
     public String getLogin() {
         return login;
     }
 
+    /**
+     * Sets the user's login
+     *
+     * @param login login
+     */
     public void setLogin(String login) {
         this.login = login;
     }
 
+    @NotNull
+    @Column(nullable = false)
     private String passwordHash;
 
+    /**
+     * Validates the user password using the specified digest algorithm.
+     *
+     * @param password password to validate
+     * @param digestAlgorithm algorithm to use
+     * @return true if the password is valid.
+     */
     public boolean validatePassword(String password, String digestAlgorithm) {
         return passwordHash.equals(DataUtils.encrypt(password, digestAlgorithm));
     }
 
+    /**
+     * Sets the password. The new password will be available for validation
+     * after the entity update.
+     *
+     * @param password
+     * @param digestAlgorithm
+     */
     public void setPassword(String password, String digestAlgorithm) {
         this.password = password;
         this.digestAlgorithm = digestAlgorithm;
-        passwordHash = "";
+        passwordHash = null; //Needed to make a change to fire @PreUpdate.
     }
 
     @OrderBy("sent DESC")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sender", cascade = CascadeType.PERSIST)
     private LinkedHashSet<Message> sentMessages = new LinkedHashSet<>();
 
+    /**
+     * retrieves messages sent by user
+     *
+     * @return set of messages
+     */
     public Set<Message> getSentMessages() {
         return sentMessages;
     }
@@ -98,10 +131,21 @@ public class Person extends Model {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "recipients")
     private LinkedHashSet<Message> receivedMessages = new LinkedHashSet<>();
 
+    /**
+     * retrieves messages recieved by user
+     *
+     * @return set of messages
+     */
     public Set<Message> getReceivedMessages() {
         return receivedMessages;
     }
 
+    /**
+     * Sends a text message to recipients.
+     *
+     * @param recipients
+     * @param text
+     */
     public void sendMessage(Set<Person> recipients, String text) {
         getSentMessages().add(new Message(this, recipients, text));
     }
@@ -109,12 +153,13 @@ public class Person extends Model {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<UserGroup> groups = new HashSet<>();
 
+    /**
+     * Retrieves a set of groups the user belongs to
+     *
+     * @return set of groups
+     */
     public Set<UserGroup> getGroups() {
         return groups;
-    }
-
-    public void setGroups(Set<UserGroup> groups) {
-        this.groups = (HashSet<UserGroup>) groups;
     }
 
     @PreRemove
@@ -124,7 +169,7 @@ public class Person extends Model {
                 -> message.getRecipients().remove(this));
     }
 
-    @Size(min = 1, message = "Password can not be empty.")
+    @Size(min = 1, message = "person.password.empty")
     @Transient
     private String password;
 
@@ -141,15 +186,11 @@ public class Person extends Model {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Person)) {
             return false;
         }
         Person other = (Person) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
 }

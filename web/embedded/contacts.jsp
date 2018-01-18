@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/WEB-INF/jspf/internationalization.jspf" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -33,8 +34,8 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th>Login</th>
-                    <th>Name</th>
+                    <th><s:t m="person.login" /></th>
+                    <th><s:t m="person.name" /></th>
                 </tr>
             </thead>
             <tbody>

@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/WEB-INF/jspf/internationalization.jspf" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,16 +10,16 @@
         <table class="embedded">
             <thead>
                 <tr>
-                    <th>When</th>
-                    <c:if test="${param.box ne 'outbox'}"><th>From</th></c:if>
-                        <th>To</th>
-                        <th>Text</th>
+                    <th><s:t m="when" />:</th>
+                    <c:if test="${param.box ne 'outbox'}"><th><s:t m="from" />:</th></c:if>
+                        <th><s:t m="to" />:</th>
+                        <th><s:t m="text" />:</th>
                     </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="message" items="${requestScope.messages}">
                     <tr>
-                        <td>${message.sent}</td>
+                        <td><fmt:formatDate value="${message.sent}" type="both"/></td>
                         <c:if test="${param.box ne 'outbox'}"><td>${message.sender.name} ${message.sender.login}</td></c:if>
                             <td>
                             <c:forEach var="recipient" items="${message.recipients}">

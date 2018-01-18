@@ -1,31 +1,32 @@
+<%@ include file="/WEB-INF/jspf/internationalization.jspf" %>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Personal page</title>
+        <title><s:t m="personal" /></title>
         <script src="formvalidation.js"></script>
     </head>
 
     <body>
         <%@ include file="/WEB-INF/jspf/header.jspf" %>
-        <h1>My page</h1>
-        <div>Login: ${requestScope.user.login}</div>
-        <div>Name: ${requestScope.user.name}</div>
-        <h2>Change name</h2>
+        <h1><s:t m="personal" /></h1>
+        <div><s:t m="person.login" />: ${requestScope.user.login}</div>
+        <div><s:t m="person.name" />: ${requestScope.user.name}</div>
+        <h2><s:t m="change" /> <s:t m="person.name" /></h2>
         <form method="POST">
-            <div><label>New name:<input type="text" name="name" value="<c:if test="${not empty requestScope.nameerror}">${param.name}</c:if>" onkeydown="hideError(this)"></label>
+            <div><label><s:t m="person.name" />:<input type="text" name="name" value="<c:if test="${not empty requestScope.nameerror}">${param.name}</c:if>" onkeydown="hideError(this)"></label>
                 <span id="nameerror">${requestScope.nameerror}</span></div>
-            <input type="submit" value="Change" />
+            <input type="submit" value="<s:t m="change" />" />
         </form>
-        <h2>Change password</h2>
+        <h2><s:t m="change" /> <s:t m="person.password" /></h2>
         <form method="POST" onsubmit="return validate(this)">
-            <div><label>Old password:<input type="password" name="oldpassword" onkeydown="hideError(this)"></label>
+            <div><label><s:t m="forms.password.old" />:<input type="password" name="oldpassword" onkeydown="hideError(this)"></label>
                 <span id="oldpassworderror">${requestScope.oldpassworderror}</span></div>
-            <div><label>Password:<input type="password" name="password" onkeydown="hideError(this)"></label>
+            <div><label><s:t m="person.password" />:<input type="password" name="password" onkeydown="hideError(this)"></label>
                 <span id="passworderror">${requestScope.passworderror}</span></div>
-            <div><label>Password one more time: <input type="password" name="password2" onkeydown="hideError(this)"></label>
-                <span id="password2error" hidden="hidden">Passwords must be the same.</span></div>
-            <input type="submit" value="Change" />
+            <div><label><s:t m="person.password" /> <s:t m="forms.onemore" />: <input type="password" name="password2" onkeydown="hideError(this)"></label>
+                <span id="password2error" hidden="hidden"><s:t m="forms.password.differs" /></span></div>
+            <input type="submit" value="<s:t m="change" />" />
         </form>
-            <a href="${pageContext.servletContext.contextPath}/personal/unregister">Unregister</a>
+            <a href="${pageContext.servletContext.contextPath}/personal/unregister"><s:t m="unregister" /></a>
     </body>
 </html>

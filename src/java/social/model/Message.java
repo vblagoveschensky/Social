@@ -1,54 +1,59 @@
 package social.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
- *
- * @author Владимир
+ * Represents a message.
  */
 @Entity
 public class Message extends Model {
 
-
-
-    
+    /**
+     * default constructor
+     */
     public Message() {
 
     }
 
+    /**
+     * constructor
+     *
+     * @param sender sender
+     * @param recipients set of recipients
+     * @param text text of the message
+     */
     public Message(Person sender, Set<Person> recipients, String text) {
         this.sender = sender;
         this.recipients = recipients;
         this.text = text;
     }
 
-
     @ManyToOne
     private Person sender;
 
+    /**
+     * retrieves the sender of the message
+     *
+     * @return sender of the message
+     */
     public Person getSender() {
         return sender;
     }
 
+    /**
+     * sets the of the message
+     *
+     * @param sender sender of the message to be set
+     */
     public void setSender(Person sender) {
         this.sender = sender;
     }
@@ -56,10 +61,20 @@ public class Message extends Model {
     @Column(nullable = false)
     private String text;
 
+    /**
+     * retrieves the text of the message
+     *
+     * @return text of the message
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     * sets the text of the message
+     *
+     * @param text text of the message
+     */
     public void setText(String text) {
         this.text = text;
     }
@@ -67,10 +82,20 @@ public class Message extends Model {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Person> recipients = new HashSet<>();
 
+    /**
+     * retrieves the set of the recipients
+     *
+     * @return set of the recipients
+     */
     public Set<Person> getRecipients() {
         return recipients;
     }
 
+    /**
+     * sets the set of the recipients
+     *
+     * @param recipients set of the recipients to be set
+     */
     public void setRecipients(Set<Person> recipients) {
         this.recipients = recipients;
     }
@@ -79,24 +104,21 @@ public class Message extends Model {
     @Temporal(TemporalType.TIMESTAMP)
     private Date sent;
 
+    /**
+     * retrieves the date and time of the message
+     *
+     * @return date and time of the message
+     */
     public Date getSent() {
         return sent;
     }
 
-   
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Message)) {
             return false;
         }
         Message other = (Message) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
-
-    
-
 }
