@@ -53,7 +53,7 @@ public class Messenger extends HttpServlet {
                 try {
                     recipients.add(manager.getReference(Person.class, Long.parseUnsignedLong(id)));
                 } catch (EntityNotFoundException exception) {
-
+//Nothing to do: we check if there were exceptions later, one time for all the loop.
                 }
             }
             if (recipients.size() < request.getParameterValues("recipients").length) {
