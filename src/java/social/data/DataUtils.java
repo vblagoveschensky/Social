@@ -112,7 +112,8 @@ public class DataUtils {
      * @param max maximum number of records per page
      * @return list of messages
      */
-    public static List getMessages(EntityManager entityManager, long id, String folder, int first, int max) {
+    @SuppressWarnings("unchecked")
+    public static List<Message> getMessages(EntityManager entityManager, long id, String folder, int first, int max) {
         return getPage(buildQuery(entityManager, folder, false, id, false, null, null), first, max);
     }
 
@@ -125,7 +126,8 @@ public class DataUtils {
      * @param max maximum number of records per page
      * @return list of contacts
      */
-    public static List getContacts(EntityManager entityManager, long id, String search, int first, int max) {
+    @SuppressWarnings("unchecked")
+    public static List<Person> getContacts(EntityManager entityManager, long id, String search, int first, int max) {
         return getPage(buildQuery(entityManager, null, false, id, true, search, false), first, max);
     }
 
