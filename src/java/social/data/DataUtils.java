@@ -152,7 +152,7 @@ public class DataUtils {
             what = String.format("count(%s)", what);
         }
 
-        List<String> where = new ArrayList();
+        List<String> where = new ArrayList<>();
 
         if (id != null) {
             String condition = excludeId ? " != " : " = ";
