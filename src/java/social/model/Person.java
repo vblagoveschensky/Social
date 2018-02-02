@@ -14,7 +14,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import social.data.DataUtils;
 
@@ -115,7 +114,7 @@ public class Person extends Model {
 
     @OrderBy("sent DESC")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sender", cascade = CascadeType.PERSIST)
-    private LinkedHashSet<Message> sentMessages = new LinkedHashSet<>();
+    private Set<Message> sentMessages = new LinkedHashSet<>();
 
     /**
      * retrieves messages sent by user
@@ -128,7 +127,7 @@ public class Person extends Model {
 
     @OrderBy("sent DESC")
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "recipients")
-    private LinkedHashSet<Message> receivedMessages = new LinkedHashSet<>();
+    private Set<Message> receivedMessages = new LinkedHashSet<>();
 
     /**
      * retrieves messages recieved by user
