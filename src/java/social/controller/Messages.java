@@ -11,12 +11,11 @@ import social.data.DataUtils;
 import social.model.Person;
 
 /**
- *Renders a folder-with-messages page.
+ * Renders a folder-with-messages page.
  */
 @WebServlet(name = "Messages", urlPatterns = {"/personal/embedded/messages"})
 public class Messages extends HttpServlet {
 
-   
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -37,9 +36,9 @@ public class Messages extends HttpServlet {
             default:
                 folder = "receivedMessages";
         }
-        
+
         EntityManager entityManager = (EntityManager) request.getAttribute("entitymanager");
-                Long id = ((Person) request.getAttribute("user")).getId();
+        Long id = ((Person) request.getAttribute("user")).getId();
         int maxResults = (int) getServletContext().getAttribute("maxresults");
         int page = DataUtils.validatePageNumber(request.getParameter("page"),
                 DataUtils.getMessagesCount(entityManager, id, folder),
