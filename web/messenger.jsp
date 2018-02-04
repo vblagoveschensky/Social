@@ -12,7 +12,7 @@
         <h2><s:t m="messenger.inbox" /></h2>
         <iframe class="box" src="${pageContext.servletContext.contextPath}/personal/embedded/messages"></iframe>
         <h2><s:t m="messenger.outbox" /></h2>
-        <iframe class="box" src="${pageContext.servletContext.contextPath}/personal/embedded/messages?box=outbox"></iframe>
+        <iframe class="box" src="${pageContext.servletContext.contextPath}/personal/embedded/messages?folder=sentMessages"></iframe>
         <h2><s:t m="messenger.newmessage" /></h2>
         <iframe id="contacts" src="${pageContext.servletContext.contextPath}/personal/embedded/contacts"></iframe>
         <form method="POST">

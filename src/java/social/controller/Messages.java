@@ -27,16 +27,8 @@ public class Messages extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String folder;
-        switch (request.getParameter("box") + "") { //Just to avoid NPE.
-            case "outbox":
-                folder = "sentMessages";
-                break;
-            case "inbox":
-            default:
-                folder = "receivedMessages";
-        }
-
+        String folder = request.getParameter("folder");
+        folder = "sentMessages".equals(folder) ? folder : "receivedMessages";
         EntityManager entityManager = (EntityManager) request.getAttribute("entitymanager");
         Long id = ((Person) request.getAttribute("user")).getId();
         int maxResults = (int) getServletContext().getAttribute("maxresults");

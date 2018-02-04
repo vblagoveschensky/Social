@@ -11,7 +11,7 @@
             <thead>
                 <tr>
                     <th><s:t m="when" />:</th>
-                    <c:if test="${param.box ne 'outbox'}"><th><s:t m="from" />:</th></c:if>
+                    <c:if test="${param.box ne 'sentMessages'}"><th><s:t m="from" />:</th></c:if>
                         <th><s:t m="to" />:</th>
                         <th><s:t m="text" />:</th>
                     </tr>
@@ -31,7 +31,7 @@
                 </c:forEach>
             </tbody>
         </table>
-        <a href="?page=${requestScope.page-1}&box=${param.box}">&lt;-</a>
-        <a href="?page=${requestScope.page+1}&box=${param.box}">-&gt;</a>
+        <a href="?page=${requestScope.page-1}&folder=${param.folder}">&lt;-</a>
+        <a href="?page=${requestScope.page+1}&folder=${param.folder}">-&gt;</a>
     </body>
 </html>
