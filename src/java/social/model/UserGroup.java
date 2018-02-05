@@ -1,7 +1,7 @@
 package social.model;
 
-import java.util.Set;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -49,13 +49,13 @@ public class UserGroup extends Model {
     }
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "groups")
-    private Set<Person> members = new HashSet<>();
+    private List<Person> members = new ArrayList<>();
 
     /**
      *retrieves set of members
      * @return set of members
      */
-    public Set<Person> getMembers() {
+    public List<Person> getMembers() {
         return members;
     }
 

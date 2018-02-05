@@ -1,11 +1,11 @@
 package social.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.RollbackException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -53,7 +53,7 @@ public class Messenger extends HttpServlet {
                 try {
                     recipients.add(manager.getReference(Person.class, Long.parseUnsignedLong(id)));
                 } catch (EntityNotFoundException exception) {
-//Nothing to do: we check if there were exceptions later, one time for all the loop.
+//Nothing to do: we check if something went wrong later, outside the loop.
                 }
             }
             if (recipients.size() < request.getParameterValues("recipients").length) {
@@ -64,11 +64,11 @@ public class Messenger extends HttpServlet {
             manager.getTransaction().setRollbackOnly();
             request.setAttribute("senderror", "messenger.norecipients");
         }
-        ((Person) request.getAttribute("user")).sendMessage(recipients,
-                request.getParameter("text"));
-        try {
+        if (!manager.getTransaction().getRollbackOnly()) {
+            ((Person) request.getAttribute("user")).sendMessage(new ArrayList<>(recipients),
+                    request.getParameter("text"));
             manager.getTransaction().commit();
-        } catch (RollbackException exception) {
+        } else {
             request.setAttribute("recipients", recipients);
         }
         doGet(request, response);

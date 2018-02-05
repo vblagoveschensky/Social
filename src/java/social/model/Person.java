@@ -1,8 +1,7 @@
 package social.model;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -114,27 +113,27 @@ public class Person extends Model {
 
     @OrderBy("sent DESC")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "sender", cascade = CascadeType.PERSIST)
-    private Set<Message> sentMessages = new LinkedHashSet<>();
+    private List<Message> sentMessages = new ArrayList<>();
 
     /**
      * retrieves messages sent by user
      *
      * @return set of messages
      */
-    public Set<Message> getSentMessages() {
+    public List<Message> getSentMessages() {
         return sentMessages;
     }
 
     @OrderBy("sent DESC")
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "recipients")
-    private Set<Message> receivedMessages = new LinkedHashSet<>();
+    private List<Message> receivedMessages = new ArrayList<>();
 
     /**
      * retrieves messages recieved by user
      *
      * @return set of messages
      */
-    public Set<Message> getReceivedMessages() {
+    public List<Message> getReceivedMessages() {
         return receivedMessages;
     }
 
@@ -144,19 +143,19 @@ public class Person extends Model {
      * @param recipients
      * @param text
      */
-    public void sendMessage(Set<Person> recipients, String text) {
+    public void sendMessage(List<Person> recipients, String text) {
         getSentMessages().add(new Message(this, recipients, text));
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private Set<UserGroup> groups = new HashSet<>();
+    private List<UserGroup> groups = new ArrayList<>();
 
     /**
      * Retrieves a set of groups the user belongs to
      *
      * @return set of groups
      */
-    public Set<UserGroup> getGroups() {
+    public List<UserGroup> getGroups() {
         return groups;
     }
 

@@ -1,8 +1,8 @@
 package social.model;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,7 +31,7 @@ public class Message extends Model {
      * @param recipients set of recipients
      * @param text text of the message
      */
-    public Message(Person sender, Set<Person> recipients, String text) {
+    public Message(Person sender, List<Person> recipients, String text) {
         this.sender = sender;
         this.recipients = recipients;
         this.text = text;
@@ -50,7 +50,7 @@ public class Message extends Model {
     }
 
     /**
-     * sets the of the message
+     * sets the sender of the message
      *
      * @param sender sender of the message to be set
      */
@@ -80,14 +80,14 @@ public class Message extends Model {
     }
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Person> recipients = new HashSet<>();
+    private List<Person> recipients = new ArrayList<>();
 
     /**
      * retrieves the set of the recipients
      *
      * @return set of the recipients
      */
-    public Set<Person> getRecipients() {
+    public List<Person> getRecipients() {
         return recipients;
     }
 
@@ -96,7 +96,7 @@ public class Message extends Model {
      *
      * @param recipients set of the recipients to be set
      */
-    public void setRecipients(Set<Person> recipients) {
+    public void setRecipients(List<Person> recipients) {
         this.recipients = recipients;
     }
 
