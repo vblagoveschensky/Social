@@ -29,7 +29,7 @@ public class Login extends HttpServlet {
         response.setContentType("text/html");
         getServletContext().getRequestDispatcher("/login.jsp").forward(request, response);
         request.getSession().removeAttribute("loginerror");
-        request.getSession().removeAttribute("email");
+        request.getSession().removeAttribute("login");
     }
 
     /**
