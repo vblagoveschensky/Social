@@ -85,7 +85,7 @@ public class DataUtils {
          *
          * @return number of the page
          */
-        public int getpageNumber() {
+        public int getPageNumber() {
             return pageNumber;
         }
 

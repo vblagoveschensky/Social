@@ -36,7 +36,7 @@ public class Messages extends HttpServlet {
                 (int) getServletContext().getAttribute("maxresults"));
         request.setAttribute("messages",
                 DataUtils.getMessages(entityManager, id, folder, pagination.getOffset(), pagination.getMaxResults()));
-        request.setAttribute("page", pagination.getpageNumber());
+        request.setAttribute("page", pagination.getPageNumber());
         response.setContentType("text/html");
         getServletContext().getRequestDispatcher("/embedded/messages.jsp").forward(request, response);
     }
