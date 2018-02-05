@@ -31,13 +31,12 @@ public class Messages extends HttpServlet {
         folder = "sentMessages".equals(folder) ? folder : "receivedMessages";
         EntityManager entityManager = (EntityManager) request.getAttribute("entitymanager");
         Long id = ((Person) request.getAttribute("user")).getId();
-        int maxResults = (int) getServletContext().getAttribute("maxresults");
-        int page = DataUtils.validatePageNumber(request.getParameter("page"),
+        DataUtils.Pagination pagination = new DataUtils.Pagination(request.getParameter("page"),
                 DataUtils.getMessagesCount(entityManager, id, folder),
-                maxResults);
+                (int) getServletContext().getAttribute("maxresults"));
         request.setAttribute("messages",
-                DataUtils.getMessages(entityManager, id, folder, page * maxResults, maxResults));
-        request.setAttribute("page", page);
+                DataUtils.getMessages(entityManager, id, folder, pagination.getOffset(), pagination.getMaxResults()));
+        request.setAttribute("page", pagination.getpageNumber());
         response.setContentType("text/html");
         getServletContext().getRequestDispatcher("/embedded/messages.jsp").forward(request, response);
     }

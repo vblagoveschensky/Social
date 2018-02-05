@@ -28,18 +28,14 @@ public class Contacts extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         EntityManager entityManager = (EntityManager) request.getAttribute("entitymanager");
-
         String search = request.getParameter("search");
         Long id = ((Person) request.getAttribute("user")).getId();
-        int maxResults = (int) getServletContext().getAttribute("maxresults");
-
-        int page = DataUtils.validatePageNumber(request.getParameter("page"),
+        DataUtils.Pagination pagination = new DataUtils.Pagination(request.getParameter("page"),
                 DataUtils.getContactsCount(entityManager, id, search),
-                maxResults);
-
+                (int) getServletContext().getAttribute("maxresults"));
         request.setAttribute("users",
-                DataUtils.getContacts(entityManager, id, search, page * maxResults, maxResults));
-        request.setAttribute("page", page);
+                DataUtils.getContacts(entityManager, id, search, pagination.getOffset(), pagination.getMaxResults()));
+        request.setAttribute("page", pagination.getpageNumber());
         response.setContentType("text/html");
         getServletContext().getRequestDispatcher("/embedded/contacts.jsp").forward(request, response);
     }

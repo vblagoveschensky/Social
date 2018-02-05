@@ -52,24 +52,58 @@ public class DataUtils {
     }
 
     /**
-     * Validates and corrects a requested page number for pagination
-     *
-     * @param txtPageNumber page number text representation
-     * @param count number of records
-     * @param maxResults maximum number of records per page
-     * @return a valid page number
+     *Represents data needed for pagination.
      */
-    public static int validatePageNumber(String txtPageNumber, long count, int maxResults) {
-        int page = parseUnsignedIntOrZero(txtPageNumber);
-        if (maxResults > 0) {
-            int maxPage = (int) (count / maxResults);
-            if (page > maxPage) {
-                page = maxPage;
+    public static class Pagination {
+
+        private int pageNumber;
+        private int resultsCount;
+        private int maxResults;
+
+        /**
+         *Creates a new Pagination object.
+         * @param txtPageNumber text representation of requested page number
+         * @param count total amount of records
+         * @param maxResults maximum number of results on a page
+         */
+        public Pagination(String txtPageNumber, long count, int maxResults) {
+            this.maxResults = maxResults;
+            resultsCount = maxResults;
+            pageNumber = parseUnsignedIntOrZero(txtPageNumber);
+            if (maxResults > 0) {
+                int pages = (int) (count / maxResults);
+                if (pageNumber >= pages) {
+                    resultsCount = (int) (count % maxResults);
+                    pageNumber = pages;
+                }
+            } else {
+                pageNumber = 0;
             }
-        } else {
-            page = 0;
         }
-        return page;
+
+        /**
+         *
+         * @return number of the page
+         */
+        public int getpageNumber() {
+            return pageNumber;
+        }
+
+        /**
+         *
+         * @return offset to use in query to display the page
+         */
+        public int getOffset() {
+            return pageNumber * maxResults;
+        }
+
+        /**
+         *
+         * @return maxresults to use in query to display the page
+         */
+        public int getMaxResults() {
+            return resultsCount;
+        }
     }
 
     private static long getCount(Query countQuery) {
@@ -78,13 +112,14 @@ public class DataUtils {
 
     /**
      * Retrieves the number of messages in a user's DataUtils
+     *
      * @param entityManager EntityManager instance to use
      * @param id id of user, whose messages to be counted
      * @param folder name of the folder
      * @return number of messages
      */
     public static long getMessagesCount(EntityManager entityManager, long id, String folder) {
-        return getCount(buildQuery(entityManager, folder, true, id, false, null, null));
+        return getCount(buildQuery(entityManager, folder, false, true, id, false, null, null, null));
     }
 
     /**
@@ -96,7 +131,7 @@ public class DataUtils {
      * @return number of contacts
      */
     public static long getContactsCount(EntityManager entityManager, long id, String search) {
-        return getCount(buildQuery(entityManager, null, true, id, true, search, false));
+        return getCount(buildQuery(entityManager, null, null, true, id, true, search, false, null));
     }
 
     private static List getPage(Query query, int first, int max) {
@@ -105,6 +140,7 @@ public class DataUtils {
 
     /**
      * Retrieves messages from a user's folder
+     *
      * @param entityManager EntityManager instance to use
      * @param id user's id
      * @param folder name of the folder
@@ -114,10 +150,11 @@ public class DataUtils {
      */
     @SuppressWarnings("unchecked")
     public static List<Message> getMessages(EntityManager entityManager, long id, String folder, int first, int max) {
-        return getPage(buildQuery(entityManager, folder, false, id, false, null, null), first, max);
+        return getPage(buildQuery(entityManager, folder, true, false, id, false, null, null, "sent DESC"), first, max);
     }
 
     /**
+     * Retrieves user's contacts
      *
      * @param entityManager EntityManager instance to use
      * @param id user's id
@@ -128,24 +165,31 @@ public class DataUtils {
      */
     @SuppressWarnings("unchecked")
     public static List<Person> getContacts(EntityManager entityManager, long id, String search, int first, int max) {
-        return getPage(buildQuery(entityManager, null, false, id, true, search, false), first, max);
+        return getPage(buildQuery(entityManager, null, null, false, id, true, search, false, null), first, max);
     }
 
     /**
      * Retrieves id of a user by his login
+     *
      * @param entityManager EntityManager instance to use
      * @param login the user's login
      * @return id of the user
      */
     public static Long getUserId(EntityManager entityManager, String login) {
-        return (Long) buildQuery(entityManager, "id", false, null, null, login, true).getSingleResult();
+        return (Long) buildQuery(entityManager, "id", false, false, null, null, login, true, null).getSingleResult();
     }
 
     private static Query buildQuery(EntityManager entityManager,
-            String field, boolean count, Long id, Boolean excludeId, String search, Boolean strict) {
+            String field, Boolean join, boolean count, Long id, Boolean excludeId, String search,
+            Boolean strict, String order) {
+        final String JOINED = "joined";
         String what = "user";
+        String from = "Person user";
         if (field != null) {
             what += ("." + field);
+            if (join) {
+                from += (String.format(" join %s %s", what, JOINED));
+            }
         }
 
         if (count) {
@@ -168,8 +212,14 @@ public class DataUtils {
             }
         }
 
-        Query query = entityManager.createQuery(String.format("select %s from Person user where %s",
-                what, String.join(" and ", where)));
+        if (order == null) {
+            order = "";
+        } else {
+            order = String.format("order by %s.%s", JOINED, order);
+        }
+
+        Query query = entityManager.createQuery(String.format("select distinct %s from %s where %s %s",
+                what, from, String.join(" and ", where), order));
 
         if (id != null) {
             query.setParameter("id", id);
