@@ -28,7 +28,7 @@ public class Message extends Model {
      * constructor
      *
      * @param sender sender
-     * @param recipients set of recipients
+     * @param recipients list of recipients
      * @param text text of the message
      */
     public Message(Person sender, List<Person> recipients, String text) {
@@ -83,18 +83,18 @@ public class Message extends Model {
     private List<Person> recipients = new ArrayList<>();
 
     /**
-     * retrieves the set of the recipients
+     * retrieves the list of the recipients
      *
-     * @return set of the recipients
+     * @return list of the recipients
      */
     public List<Person> getRecipients() {
         return recipients;
     }
 
     /**
-     * sets the set of the recipients
+     * sets the list of the recipients
      *
-     * @param recipients set of the recipients to be set
+     * @param recipients list of the recipients to be set
      */
     public void setRecipients(List<Person> recipients) {
         this.recipients = recipients;

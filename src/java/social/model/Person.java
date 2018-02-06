@@ -118,7 +118,7 @@ public class Person extends Model {
     /**
      * retrieves messages sent by user
      *
-     * @return set of messages
+     * @return list of messages
      */
     public List<Message> getSentMessages() {
         return sentMessages;
@@ -131,7 +131,7 @@ public class Person extends Model {
     /**
      * retrieves messages recieved by user
      *
-     * @return set of messages
+     * @return list of messages
      */
     public List<Message> getReceivedMessages() {
         return receivedMessages;
@@ -151,9 +151,9 @@ public class Person extends Model {
     private List<UserGroup> groups = new ArrayList<>();
 
     /**
-     * Retrieves a set of groups the user belongs to
+     * Retrieves a list of groups the user belongs to
      *
-     * @return set of groups
+     * @return list of groups
      */
     public List<UserGroup> getGroups() {
         return groups;

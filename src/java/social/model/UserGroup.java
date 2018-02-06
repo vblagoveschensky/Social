@@ -52,8 +52,8 @@ public class UserGroup extends Model {
     private List<Person> members = new ArrayList<>();
 
     /**
-     *retrieves set of members
-     * @return set of members
+     *retrieves list of members
+     * @return list of members
      */
     public List<Person> getMembers() {
         return members;
